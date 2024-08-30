@@ -8,21 +8,31 @@ import plotly.express as px
 gdp_df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv')
 diabetes_df = pd.read_csv('https://raw.githubusercontent.com/plotly/datasets/master/diabetes-vid.csv')
 
-# Crear gráficos
-gdp_fig = px.choropleth(gdp_df, 
-                        locations="CODE",
-                        color="GDP (BILLIONS)",
-                        hover_name="COUNTRY",
-                        color_continuous_scale=px.colors.sequential.Plasma,
-                        title="World GDP 2014")
+# Asegúrate de verificar las columnas del dataset de diabetes
+print(diabetes_df.columns)  # Esto es útil para debug, muestra los nombres de columnas
 
-diabetes_fig = px.scatter(diabetes_df, 
-                          x='Diabetes per 100 adults', 
-                          y='Obesity per 100 adults',
-                          size='Obesity per 100 adults',
-                          color='Country',
-                          hover_name='Country',
-                          title='Diabetes vs Obesity')
+# Crear gráficos
+gdp_fig = px.choropleth(
+    gdp_df, 
+    locations="CODE",
+    color="GDP (BILLIONS)",
+    hover_name="COUNTRY",
+    color_continuous_scale=px.colors.sequential.Plasma,
+    title="World GDP 2014"
+)
+
+# Ajustar el gráfico para que utilice columnas correctas
+# Cambia el scatter plot para que use columnas que existen en el dataframe
+# Aquí usamos 'Glucose' vs 'BMI' como ejemplo
+diabetes_fig = px.scatter(
+    diabetes_df, 
+    x='Glucose', 
+    y='BMI',
+    size='Age',  # Puedes ajustar esta parte para representar otra variable
+    color='Outcome',  # Categoría binaria para el outcome
+    hover_name='Age',
+    title='Glucose vs BMI'
+)
 
 # Inicializar la app Dash
 app = dash.Dash(__name__)
@@ -35,7 +45,7 @@ app.layout = html.Div([
         dcc.Graph(figure=gdp_fig)
     ]),
     html.Div([
-        html.H2("Diabetes vs Obesity"),
+        html.H2("Diabetes: Glucose vs BMI"),
         dcc.Graph(figure=diabetes_fig)
     ])
 ])
